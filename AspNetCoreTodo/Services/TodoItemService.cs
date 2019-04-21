@@ -1,6 +1,7 @@
 using AspNetCoreTodo.Data;
 using AspNetCoreTodo.Models;
 using Microsoft.EntityFrameworkCore;
+using System;
 using System.Linq;
 using System.Threading.Tasks;
 
@@ -22,5 +23,18 @@ namespace AspNetCoreTodo.Services
                 .ToArrayAsync();
             return items;
         }
+
+        async Task<bool> ITodoItemService.AddItemAsync(TodoItem newItem)
+        {
+            newItem.Id = Guid.NewGuid();
+            newItem.IsDone = false;
+            newItem.DueAt = DateTimeOffset.Now.AddDays(3);
+
+            _context.Items.Add(newItem);
+
+            var saveResult = await _context.SaveChangesAsync();
+            return saveResult == 1;
+        }
+        
     }
 }
